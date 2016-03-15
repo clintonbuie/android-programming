@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +17,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
+    private ImageButton mNextButton;
+    private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
 
     private Question[] mQuestionBank = new Question[] {
@@ -56,6 +58,14 @@ public class QuizActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                updateQuestion();
+            }
+        });
         updateQuestion();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -87,7 +97,17 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mNextButton = (Button) findViewById(R.id.next_button);
+        mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex = (mCurrentIndex - 1 < 0) ? mQuestionBank.length - 1 : mCurrentIndex - 1;
+                updateQuestion();
+            }
+        });
+
+        mNextButton = (ImageButton) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
