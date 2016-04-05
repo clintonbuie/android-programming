@@ -12,6 +12,8 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
 
+    private boolean mDeleted;
+
     public Crime() {
         this("",false);
     }
@@ -50,5 +52,13 @@ public class Crime {
 
     public void setDate(Date date) {
         mDate = date;
+    }
+
+    public boolean isDeleted() {
+        return mDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        mDeleted = deleted;
     }
 }

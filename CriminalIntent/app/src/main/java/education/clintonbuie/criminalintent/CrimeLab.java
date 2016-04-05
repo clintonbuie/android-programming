@@ -24,20 +24,25 @@ public class CrimeLab {
 
     private CrimeLab(Context context ) {
         mCrimes = new ArrayList<Crime>();
-        for (int i = 0; i < 100; i++) {
-            Crime crime = new Crime("Crime #" + i, (i % 2 == 0));
-            mCrimes.add(crime);
-        }
     }
 
+    public void addCrime(Crime c) {
+        mCrimes.add(c);
+    }
 
     public List<Crime> getCrimes() {
-        return mCrimes;
+        List<Crime> crimes = new ArrayList<Crime>();
+        for (Crime crime : mCrimes) {
+            if (!crime.isDeleted()) {
+                crimes.add(crime);
+            }
+        }
+        return crimes;
     }
 
     public Crime getCrime(UUID id) {
         for (Crime crime : mCrimes) {
-            if (crime.getId().equals(id)) {
+            if (crime.getId().equals(id) && !crime.isDeleted()) {
                 return crime;
             }
         }
