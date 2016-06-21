@@ -11,11 +11,21 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
-
     private boolean mDeleted;
+
+    private String mSuspect;
+
 
     public Crime() {
         this("",false);
+    }
+
+    public Crime(UUID id) {
+        mId = id;
+        mDate = new Date();
+        mTitle = "";
+        mSolved = false;
+        mDeleted = false;
     }
 
     public Crime(String title, Boolean solved) {
@@ -23,6 +33,7 @@ public class Crime {
         mDate = new Date();
         mTitle = title;
         mSolved = solved;
+        mDeleted = false;
     }
 
     public UUID getId() {
@@ -61,4 +72,14 @@ public class Crime {
     public void setDeleted(boolean deleted) {
         mDeleted = deleted;
     }
+
+
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
+    }
+
 }
