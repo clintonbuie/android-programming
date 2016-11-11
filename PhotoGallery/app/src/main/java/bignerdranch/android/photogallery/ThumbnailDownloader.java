@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import java.io.IOException;
@@ -16,11 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ThumbnailDownloader<T> extends HandlerThread {
     private static final String TAG = "ThumbnailDownloader";
     private final int MESSAGE_DOWNLOAD = 0;
+    private final int CACHE_SIZE = 100;
 
     private Handler mRequestHandler;
     private ConcurrentHashMap<T, String> mRequestMap = new ConcurrentHashMap<>();
     private Handler mResponseHandler;
     private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
+    private LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(CACHE_SIZE);
 
     public interface ThumbnailDownloadListener<T> {
         void onThumbnailDownloadListener(T target, Bitmap thumbnail);
@@ -70,10 +73,15 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                 return;
             }
 
-            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-            Log.i(TAG, "Bitmap created");
+            Bitmap bitmap = cache.get(url);
+            if (bitmap == null) {
+                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                cache.put(url, bitmap);
+                Log.i(TAG, "Bitmap created and cached");
+            }
 
+            final Bitmap resultBitmap = bitmap;
             mResponseHandler.post(new Runnable() {
 
                 @Override
@@ -83,7 +91,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                     }
 
                     mRequestMap.remove(target);
-                    mThumbnailDownloadListener.onThumbnailDownloadListener(target, bitmap);
+                    mThumbnailDownloadListener.onThumbnailDownloadListener(target, resultBitmap);
                 }
             });
         } catch (IOException ioe) {
